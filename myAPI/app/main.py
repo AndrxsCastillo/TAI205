@@ -1,22 +1,24 @@
 # 1. Importaciones
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException, Depends
 from typing import Optional
 import asyncio
-from typing import Optional
 from pydantic import BaseModel, Field
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
 
 
 # 2. Inicialización de APP
-app= FastAPI(title='Mi Primer API',
-             description="Andrés Castillo",
-             version='1.0.0'
-             )
+app= FastAPI(
+    title='Mi Primer API',
+    description="Andrés Castillo",
+    version='1.0.0'
+)
 
 # BD ficticia
 usuarios=[
-    {"id":"1","nombre":"Andrés","edad":"21"},
-    {"id":"2","nombre":"Rafael","edad":"22"},
-    {"id":"3","nombre":"Leonardo","edad":"20"},
+    {"id":1,"nombre":"Andrés","edad":"21"},
+    {"id":2,"nombre":"Rafael","edad":"22"},
+    {"id":3,"nombre":"Leonardo","edad":"20"},
 ]
 
 
@@ -31,6 +33,20 @@ class crear_usuario(BaseModel):
 @app.get("/", tags=['Inicio']) # Endpoint de inicio
 async def holaMundo():
     return  {"mensaje":"Hola mundo FASTAPI"}
+
+# Seguridad HTTP BASIC
+seguridad = HTTPBasic()
+
+def verificar_peticion(credenciales:HTTPBasicCredentials=Depends(seguridad)):
+    userAuth = secrets.compare_digest(credenciales.username, "andrescastillo")
+    passAuth = secrets.compare_digest(credenciales.password, "123456")
+
+    if not(userAuth and passAuth):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            deefault="Credenciales no autorizadas"
+        )
+
 
 @app.get("/bienvenida", tags=['Inicio'])
 async def bien():
@@ -108,18 +124,17 @@ async def actualizarUsuario(id: str, usuario_actualizado: dict):
 
 
 @app.delete("/v1/usuarios/{id}", tags=['CRUD HTTP']) # Endpoint DELETE
-async def eliminarUsuario(id: str):
+async def eliminarUsuario(id: int, userAuth:str=Depends(verificar_peticion)):
     # Buscamos el usuario en la lista
     for usr in usuarios:
         if usr["id"] == id:
             usuarios.remove(usr)
             return {
-                "mensaje": "Usuario eliminado exitosamente",
-                "id_eliminado": id
+                "mensaje": f"Usuario eliminado por {userAuth}"
             }
     
     # Si no lo encuentra manda error
     raise HTTPException(
-        status_code=400,
+        status_code=404,
         detail="No se encontró el usuario para eliminar"
     )

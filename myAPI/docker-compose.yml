@@ -3,7 +3,7 @@ services:
     build: .
     container_name: server_FastAPI
     ports:
-      - "5000:5000"
+      - "8000:8000"
     volumes:  # Lugar donde ser guarda información
       - ./app:/app/app
 
