@@ -1,0 +1,20 @@
+# Importamos la imagen base de python
+FROM python:3.12-slim
+
+# Crear Carpeta de trabajo
+WORKDIR /app
+
+# Copiar requerimientos
+COPY requirements.txt .
+
+# Instalar requerimientos
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar archivo del API
+COPY ./app ./app
+
+# Exponer puerto
+EXPOSE 5001
+
+# Comando para ejecutar fastAPI
+CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","5001","--reload"]
