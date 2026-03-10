@@ -1,7 +1,7 @@
 services:
   api:
     build: .
-    container_name: contenedor_examen
+    container_name: examen_contenedor
     ports:
       - "5001:5001"
     volumes:  # Lugar donde ser guarda información

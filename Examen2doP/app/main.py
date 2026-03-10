@@ -6,7 +6,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
 # Inicialización de la API
-app= FastAPI(
+app = FastAPI(
     title='API Sistema de Reservas Hospedaje',
     description="Examen 2do Parcial",
     version='1.0.0'
@@ -14,9 +14,9 @@ app= FastAPI(
 
 # Base de datos ficticia
 reservas = [
-    {"id":1,"nombreHuesped":"Andrés", "fechaEntrada":"2025-06-01", "fechaSalida":"2025-06-05", "tipoHabitacion": "Doble", "diasEstancia": 5},
-    {"id":2,"nombreHuesped":"Rafael", "fechaEntrada":"2025-06-02", "fechaSalida":"2025-06-06", "tipoHabitacion": "Sencilla", "diasEstancia": 5},
-    {"id":3,"nombreHuesped":"Leonardo", "fechaEntrada":"2025-06-03", "fechaSalida":"2025-06-07", "tipoHabitacion": "Suite", "diasEstancia": 5}
+    {"id":1,"nombreHuesped":"Andrés", "fechaEntrada":"2025-06-01", "fechaSalida":"2025-06-05", "tipoHabitacion": "Doble", "diasEstancia": 5, "confirmarLlegada": True},
+    {"id":2,"nombreHuesped":"Rafael", "fechaEntrada":"2025-06-02", "fechaSalida":"2025-06-06", "tipoHabitacion": "Sencilla", "diasEstancia": 5, "confirmarLlegada": True},
+    {"id":3,"nombreHuesped":"Leonardo", "fechaEntrada":"2025-06-03", "fechaSalida":"2025-06-07", "tipoHabitacion": "Suite", "diasEstancia": 5, "confirmarLlegada": True}
 ]
 
 # Modelo de validación Pydantic
@@ -101,7 +101,7 @@ async def confirmarReserva(id: int, userAuth:str=Depends(verificar_peticion)):
     )
 
 # Cancelar reserva
-@app.delete("/v1/reservas/{id}", tags=['CRUD HTTP'])
+@app.delete("/v1/reservas/{id}", tags=['RESERVAS'])
 async def cancelarReserva(id: int, userAuth:str=Depends(verificar_peticion)):
     for usr in reservas:
         if usr["id"] == id:
