@@ -1,9 +1,9 @@
 services:
   api:
     build: .
-    container_name: server_FastAPI
+    container_name: API_JWT
     ports:
-      - "5000:5000"
+      - "5001:5001"
     volumes:  # Lugar donde ser guarda información
       - ./app:/app/app
 

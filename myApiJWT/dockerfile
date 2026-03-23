@@ -14,10 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./app ./app
 
 # Exponer puerto
-EXPOSE 5000
+EXPOSE 5001
 
 # Comando para ejecutar fastAPI
-CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","5000","--reload"]
+CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","5001","--reload"]
 
 
 
