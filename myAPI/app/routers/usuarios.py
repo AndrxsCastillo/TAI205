@@ -2,6 +2,9 @@ from fastapi import status, HTTPException, Depends, APIRouter
 from app.data.database import usuarios
 from app.models.usuarios import crear_usuario
 from app.security.auth import verificar_peticion
+from sqlalchemy.orm import Session
+from app.data.db import get_db
+from app.data.usuario import usuario as usuarioDB
 
 
 routerU = APIRouter(
@@ -11,27 +14,31 @@ routerU = APIRouter(
 )
 
 @routerU.get("/") # Endpoint GET
-async def consultaT():
+async def consultaT(db:Session=Depends(get_db)):
+    
+    # Creación de query para leer los datos del modelo
+    queryUsuarios = db.query(usuarioDB).all()
+
     return{
         "status":"200",
-        "total": len(usuarios),
-        "data": usuarios
+        "total": len(queryUsuarios),
+        "data": queryUsuarios
     }
 
 
 @routerU.post("/", status_code=status.HTTP_201_CREATED) # Endpoint POST
-async def crearUsuario(usuario:crear_usuario): # Uso del modelo
-    for usr in usuarios:
-        if usr["id"] == usuario.id:
-            raise HTTPException(
-                status_code=400,
-                detail="El ID ya existe"
-            )
-    usuarios.append(usuario)
+async def crearUsuario(usuarioP:crear_usuario, db:Session=Depends(get_db)): # Uso del modelo Pydantic
+    
+    # Creamo un objeto para que 
+    usuarioNuevo = usuarioDB(nombre = usuarioP.nombre, edad = usuarioP.edad)
+    db.add(usuarioNuevo)
+    db.commit()
+    db.refresh(usuarioNuevo)
+
     return{
         "mensaje":"Usuario agregado correctamente",
         "status":"200",
-        "usuario":usuario
+        "usuario":usuarioP
     }
 
 
